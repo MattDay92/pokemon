@@ -10,7 +10,7 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(45), nullable=False, unique=True)
     email = db.Column(db.String(150), nullable=False, unique=True)
     password = db.Column(db.String, nullable=False)
-    catch = db.relationship('Catch', backref='author', lazy=True)
+    pokemon = db.relationship('Pokemon', backref='author', lazy=True)
 
     def __init__(self, username, email, password):
         self.username = username
@@ -24,13 +24,15 @@ class User(db.Model, UserMixin):
 
 class Pokemon(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     pokename = db.Column(db.String(45), nullable=False, unique=True)
     img = db.Column(db.String)
     date_caught = db.Column(db.DateTime, nullable=False, default=datetime.utcnow())
     catch = db.relationship('Catch', backref='catch', lazy=True)
 
-    def __init__(self, id, pokename, img):
+    def __init__(self, id, user_id, pokename, img):
         self.id = id
+        self.user_id = user_id
         self.pokename = pokename
         self.img = img
     

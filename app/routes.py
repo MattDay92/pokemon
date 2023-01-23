@@ -2,7 +2,7 @@ from app import app
 from flask import render_template, request, redirect, url_for
 from .forms import UserCreationForm, PokemonSearchForm, LoginForm, CatchPokemon
 from .models import User, Pokemon, Catch
-from flask_login import login_user, logout_user, current_user
+from flask_login import login_user, logout_user, current_user, login_required
 import requests as r
 
 @app.route('/', methods=['GET', 'POST'])
@@ -31,6 +31,7 @@ def findpokemon():
 
 
 @app.route('/catch', methods=['GET', 'POST'])
+@login_required
 def catchPokemon():
     catch = CatchPokemon()
     if request.method == "POST":
@@ -46,7 +47,7 @@ def catchPokemon():
             pokename = pokemon_dict["Name"]
             img = pokemon_dict["Front Shiny"]
 
-            pokemon = Pokemon(id, pokename, img)
+            pokemon = Pokemon(id, current_user.id, pokename, img)
 
             pokemon.saveToDB()
 
@@ -59,10 +60,13 @@ def catchPokemon():
     return render_template('catch.html', catch=catch)
 
 @app.route('/my_pokemon', methods=["GET"])
+@login_required
 def myPokemon():
 
+    pokemon = Pokemon.query.all()
+    my_pokemon = current_user.pokemon
 
-    return render_template('my_pokemon.html')
+    return render_template('my_pokemon.html', pokemon = pokemon, my_pokemon = my_pokemon)
 
 @app.route('/signup', methods=["GET", "POST"])
 def signUpPage():
@@ -100,7 +104,7 @@ def loginPage():
             else:
                 print('User doesn\'t exist')
             
-        return redirect(url_for('findpokemon'))
+        return redirect(url_for('myPokemon'))
 
 
     return render_template('login.html', form = form)

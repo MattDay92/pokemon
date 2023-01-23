@@ -20,11 +20,13 @@
     {% block content %}
 
         <div class="row my-5 d-flex justify-content-center text-white">
-                <div class="d-flex my-2 justify-content-center">
-                    <!-- <img src='{{ img }}'>
-                    <p>Name:  {{ pokename }}</p> -->
+            {% for poke in my_pokemon %}
+                <div class="col my-2">
+                    <div class="my_pokemon"><img src='{{ poke.img }}'></div>
+                    <p class="my_pokemon">{{ poke.pokename.title() }}</p>
                 </div>
                 <br>
+            {%endfor%}
 
         </div>
     </div>
