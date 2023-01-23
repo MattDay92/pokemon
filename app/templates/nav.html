@@ -9,15 +9,24 @@
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="/">Search</a>
                     </li>
+                    {% if current_user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link" href="/">My Pokemon</a>
+                        <a class="nav-link" href="/my_pokemon">{{current_user.username}}'s Pokemon</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/catch">Catch Pokemon</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout">Log Out</a>
+                    </li>
+                    {% else %}
                     <li class="nav-item">
                         <a class="nav-link" href="/signup">Sign Up</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/login">Log In</a>
                     </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>

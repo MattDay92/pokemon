@@ -12,28 +12,20 @@
 </head>
 
 <body>
-    {% block content %}
     <div class="container rounded-5 col-4 my-5 p-3 bg-danger">
         {% include 'nav.html' %}
-
         <div class="row text-center my-5 text-white">
-
-            <h1>Log In to Pokedex</h1>
+            <h1>{{current_user.username}}'s Pokemon</h1>
         </div>
+    {% block content %}
+
         <div class="row my-5 d-flex justify-content-center text-white">
-            <form method="POST" class="col-8">
-
-                {{ form.hidden_tag() }}
-
-                {{ form.username(class='form-control', placeholder = 'Trainer Username') }}
-                {{ form.password(class='form-control', placeholder = 'Trainer Password') }}
-
                 <div class="d-flex my-2 justify-content-center">
-                    {{ form.submit(class='btn btn-white bg-body-secondary') }}
+                    <!-- <img src='{{ img }}'>
+                    <p>Name:  {{ pokename }}</p> -->
                 </div>
                 <br>
-                
-            </form>
+
         </div>
     </div>
 

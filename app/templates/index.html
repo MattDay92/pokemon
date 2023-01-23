@@ -7,10 +7,12 @@
     <title>Bootstrap demo</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{url_for('static', filename='main.css')}}">
 </head>
 
 <body>
-    <div class="container col-4 my-5 p-3 bg-danger">
+    
+    <div class="container rounded-5 col-4 my-5 p-3 bg-danger">
         {% include 'nav.html' %}
         <div class="row text-center my-5 text-white">
             <h1>Pokedex</h1>
@@ -25,7 +27,7 @@
                 {{ poke.choose(class='form-control', placeholder = 'Choose Your Pokemon!') }}
 
                 <div class="d-flex my-2 justify-content-center">
-                    {{ poke.submit(class='btn btn-white bg-body-secondary') }}
+                    {{ poke.submit(class='btn btn-light') }}
                 </div>
                 <br>
                 {% if pokemon_dict %}
@@ -37,7 +39,9 @@
                     <p>Base HP: {{pokemon_dict["Base HP"]}}</p>
                     <p>Base Attack: {{pokemon_dict["Base ATK"]}}</p>
                     <p>Base Defense: {{pokemon_dict["Base DEF"]}}</p>
+                    <br>
                 </div>
+                <br>
                 {% endif %}
             </form>
         </div>

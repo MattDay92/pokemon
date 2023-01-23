@@ -4,8 +4,11 @@ from wtforms.validators import DataRequired, EqualTo
 
 class PokemonSearchForm(FlaskForm):
     choose = StringField('Poke', validators = [DataRequired()])
-
     submit = SubmitField()
+
+class CatchPokemon(FlaskForm):
+    choose = StringField('Poke', validators = [DataRequired()])
+    catch_pokemon = SubmitField()
 
 class UserCreationForm(FlaskForm):
     username = StringField('Username', validators = [DataRequired()])
