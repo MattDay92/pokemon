@@ -1,33 +1,32 @@
-
-    <nav class="navbar navbar-expand-lg">
-        <div class="container-fluid bg-body-danger">
-            <a class="navbar-brand" href="#">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/International_Pok%C3%A9mon_logo.svg/2560px-International_Pok%C3%A9mon_logo.svg.png"
-                    alt="Pokemon Logo" width="100" height="auto"></a>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link active text-white" aria-current="page" href="/">Search</a>
-                    </li>
-                    {% if current_user.is_authenticated %}
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="/my_pokemon">{{current_user.username}}'s Pokemon</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="/catch">Catch Pokemon</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="/logout">Log Out</a>
-                    </li>
-                    {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="/signup">Sign Up</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="/login">Log In</a>
-                    </li>
-                    {% endif %}
-                </ul>
-            </div>
+<nav class="navbar navbar-expand-lg">
+    <div class="container-fluid bg-body-danger">
+        <a class="navbar-brand" href="#">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/International_Pok%C3%A9mon_logo.svg/2560px-International_Pok%C3%A9mon_logo.svg.png"
+                alt="Pokemon Logo" width="100" height="auto"></a>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link active text-white" aria-current="page" href="/">Search</a>
+                </li>
+                {% if current_user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="/my_pokemon">{{current_user.username}}'s Pokemon</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="/catch">Catch Pokemon</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="/logout">Log Out</a>
+                </li>
+                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="/signup">Sign Up</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="/login">Log In</a>
+                </li>
+                {% endif %}
+            </ul>
         </div>
-    </nav>
+    </div>
+</nav>

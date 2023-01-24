@@ -1,5 +1,5 @@
 from app import app
-from flask import render_template, request, redirect, url_for
+from flask import render_template, request, redirect, url_for, flash
 from .forms import UserCreationForm, PokemonSearchForm, LoginForm, CatchPokemon
 from .models import User, Pokemon, Catch
 from flask_login import login_user, logout_user, current_user, login_required
@@ -47,13 +47,29 @@ def catchPokemon():
             pokename = pokemon_dict["Name"]
             img = pokemon_dict["Front Shiny"]
 
-            pokemon = Pokemon(id, current_user.id, pokename, img)
+            caught = Pokemon.query.all()
+            caught_set = set()
+            my_pokemon = Pokemon.query.filter_by(user_id = current_user.id)
+            my_pokemon_set = set()
+            for name in caught:
+                caught_set.add(name.id)
+            for poke in my_pokemon:
+                my_pokemon_set.add(poke.id)
+            if id not in caught_set:
+                if len(my_pokemon_set) < 5:
+                    pokemon = Pokemon(id, current_user.id, pokename, img)
 
-            pokemon.saveToDB()
+                    pokemon.saveToDB()
+                else: 
+                    flash(f"You can only hold five pokemon at a time.  To catch {pokename.title()}, please release one pokemon.", category='warning')
+
+            else:
+                flash(f"{pokename.title()} has already been caught.", category='warning')
 
 
         else:
-            return "The pokemon you're looking for does not exist."
+            flash("The pokemon you're looking for does not exist.", category='warning')
+            return redirect(url_for('catchPokemon'))
 
         return render_template('catch.html', pokemon_dict = pokemon_dict, pokename = pokename, id = id, catch=catch, img=img)
     
