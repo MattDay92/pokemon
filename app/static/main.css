@@ -6,3 +6,8 @@
     display: flex;
     justify-content: center;
 }
+
+.text-props{
+    -webkit-text-fill-color: rgb(251,204,2);
+    -webkit-text-stroke: 1.5px rgb(51,91,168);
+}

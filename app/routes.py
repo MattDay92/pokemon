@@ -1,9 +1,10 @@
 from app import app
 from flask import render_template, request, redirect, url_for, flash
 from .forms import UserCreationForm, PokemonSearchForm, LoginForm, CatchPokemon
-from .models import User, Pokemon, Catch
+from .models import User, Pokemon, Catch, databaseCommit
 from flask_login import login_user, logout_user, current_user, login_required
 import requests as r
+import random
 
 @app.route('/', methods=['GET', 'POST'])
 def findpokemon():
@@ -21,9 +22,11 @@ def findpokemon():
             pokemon_dict["Base ATK"] = my_dict["stats"][1]["base_stat"]
             pokemon_dict["Base HP"] = my_dict["stats"][0]["base_stat"]
             pokemon_dict["Base DEF"] = my_dict["stats"][2]["base_stat"]
+            
 
         else:
-            return "The pokemon you're looking for does not exist."
+            flash("The pokemon you're looking for does not exist.", category='warning')
+            return redirect(url_for('findpokemon'))
 
         return render_template('index.html', poke = poke, pokemon_dict = pokemon_dict)
     
@@ -46,6 +49,11 @@ def catchPokemon():
             id = my_dict["id"]
             pokename = pokemon_dict["Name"]
             img = pokemon_dict["Front Shiny"]
+            base_hp = my_dict["stats"][0]["base_stat"]
+            base_xp = my_dict["base_experience"]
+            base_atk = my_dict["stats"][1]["base_stat"]
+            base_def = my_dict["stats"][2]["base_stat"]
+
 
             caught = Pokemon.query.all()
             caught_set = set()
@@ -57,7 +65,7 @@ def catchPokemon():
                 my_pokemon_set.add(poke.id)
             if id not in caught_set:
                 if len(my_pokemon_set) < 5:
-                    pokemon = Pokemon(id, current_user.id, pokename, img)
+                    pokemon = Pokemon(id, current_user.id, pokename, img, base_xp, base_hp, base_atk, base_def)
 
                     pokemon.saveToDB()
                 else: 
@@ -71,9 +79,24 @@ def catchPokemon():
             flash("The pokemon you're looking for does not exist.", category='warning')
             return redirect(url_for('catchPokemon'))
 
-        return render_template('catch.html', pokemon_dict = pokemon_dict, pokename = pokename, id = id, catch=catch, img=img)
+        return render_template('catch.html', pokemon_dict = pokemon_dict, pokename = pokename, id = id, catch=catch, img=img, base_hp=base_hp, base_xp=base_xp, base_def=base_def, base_atk=base_atk)
     
     return render_template('catch.html', catch=catch)
+
+@app.route('/remove/<int:pokemon_id>', methods=["GET", "POST"])
+@login_required
+def removePokemon(pokemon_id):
+    
+    poke = Pokemon.query.filter_by(id=pokemon_id).filter_by(user_id = current_user.id).first()
+
+    if current_user.id == poke.author.id:
+        poke.removeFromDB()
+        flash(f"{poke.pokename} has been removed from your team.")
+        return redirect(url_for('myPokemon'))
+
+    else:
+        flash("You cannot delete someone else's Pokemon.", category='warning')
+        return redirect(url_for('myPokemon'))
 
 @app.route('/my_pokemon', methods=["GET"])
 @login_required
@@ -82,7 +105,9 @@ def myPokemon():
     pokemon = Pokemon.query.all()
     my_pokemon = current_user.pokemon
 
-    return render_template('my_pokemon.html', pokemon = pokemon, my_pokemon = my_pokemon)
+    users=User.query.all()
+
+    return render_template('my_pokemon.html', pokemon = pokemon, my_pokemon = my_pokemon, users=users)
 
 @app.route('/signup', methods=["GET", "POST"])
 def signUpPage():
@@ -116,11 +141,11 @@ def loginPage():
                 if user.password == password:
                     login_user(user)
                 else:
-                    print('WRONG PASSWORD')
+                    flash('WRONG PASSWORD', category='warning')
             else:
-                print('User doesn\'t exist')
+                flash('User doesn\'t exist', category='warning')
             
-        return redirect(url_for('myPokemon'))
+        return redirect(url_for('myProfile'))
 
 
     return render_template('login.html', form = form)
@@ -131,4 +156,84 @@ def logOutRoute():
 
     return redirect(url_for('findpokemon'))
 
+@app.route('/pokemon/<int:user_id>', methods=["GET", "POST"])
+@login_required
+def otherUser(user_id):
 
+    other_user = User.query.get(user_id)
+    pokemon = Pokemon.query.filter_by(user_id = user_id)
+    users=User.query.all()
+
+
+    return render_template('otheruser.html', pokemon = pokemon, users = users, other_user = other_user)
+
+
+@app.route('/battle/<int:user_id>', methods=["GET", "POST"])
+@login_required
+def battleUser(user_id):
+
+    other_user = User.query.get(user_id)
+    my_pokemon = current_user.pokemon
+    opponent = other_user.pokemon
+    users=User.query.all()
+
+
+    i = 0
+    my_pokemon_wins = 0
+    opponent_wins = 0
+
+
+    
+    while i < 5:
+        my_attack = my_pokemon[i].base_atk
+        my_defense = my_pokemon[i].base_def
+        my_health = my_pokemon[i].base_hp
+        opponent_attack = opponent[i].base_atk
+        opponent_defense = opponent[i].base_def
+        opponent_health = opponent[i].base_hp
+        while True:
+            attacker = ['my_pokemon', 'opponent']
+            x = random.choice(attacker)
+            print(x)
+            if x == 'my_pokemon':
+                opponent_defense -= my_attack
+                if opponent_defense < 0:
+                    opponent_health += opponent_defense
+                if opponent_health < 0:
+                    my_pokemon_wins += 1
+                    break
+            else:
+                my_defense -= opponent_attack
+                if my_defense < 0:
+                    my_health += my_defense
+                if my_health < 0:
+                    opponent_wins += 1
+                    break
+        print(my_pokemon_wins)
+        print(opponent_wins)
+        
+        i += 1
+        continue
+
+    if my_pokemon_wins > opponent_wins:
+        current_user.wins += 1
+        flash(f'{current_user.username} wins!', category='success')
+    else:
+        other_user.wins += 1
+        flash(f'{other_user.username} wins...', category='warning')
+    
+
+    databaseCommit()
+
+    return render_template('battle.html', my_pokemon = my_pokemon, other_user = other_user, users = users, opponent=opponent)
+
+@app.route('/my_profile', methods=["GET", "POST"])
+@login_required
+def myProfile():
+
+    pokemon = Pokemon.query.all()
+    my_pokemon = current_user.pokemon
+
+    users=User.query.all()
+
+    return render_template('my_profile.html', pokemon = pokemon, my_pokemon = my_pokemon, users=users)

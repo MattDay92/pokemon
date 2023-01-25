@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{%block content%}
+
+<div class="row text-center my-5 text-props">
+    <h1>{{current_user.username}}</h1>
+</div>
+
+<div class="row my-3 d-flex justify-content-center text-white">
+    {% for poke in my_pokemon %}
+    <div class="col">
+        <div class="my_pokemon"><img src='{{ poke.img }}'></div>
+        <p class="my_pokemon">{{ poke.pokename.title() }}</p>
+    </div>
+    <br>
+    {%endfor%}
+    <p class="text-center">Wins:  {{current_user.wins}}</p>
+</div>
+
+    <div class="row my-3 d-flex justify-content-center text-props text-center">
+        <h1>VERSUS</h1>
+    </div>
+
+    <div class="row text-center my-5 text-props">
+        <h1>{{ other_user.username }}</h1>
+    </div>
+
+    <div class="row my-3 d-flex justify-content-center text-white">
+        {% for poke in other_user.pokemon %}
+        <div class="col">
+            <div class="my_pokemon"><img src='{{ poke.img }}'></div>
+            <p class="my_pokemon">{{ poke.pokename.title() }}</p>
+        </div>
+        <br>
+        {%endfor%}
+        <p class="text-center">Wins:  {{other_user.wins}}</p>
+    </div>
+
+
+        {%endblock%}

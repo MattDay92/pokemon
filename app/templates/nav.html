@@ -10,14 +10,18 @@
                 </li>
                 {% if current_user.is_authenticated %}
                 <li class="nav-item">
-                    <a class="nav-link text-white" href="/my_pokemon">{{current_user.username}}'s Pokemon</a>
+                    <a class="nav-link text-white" href="/my_pokemon">Battle Your Pokemon</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link text-white" href="/catch">Catch Pokemon</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link text-white" href="/my_profile">{{current_user.username}}</a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link text-white" href="/logout">Log Out</a>
                 </li>
+                
                 {% else %}
                 <li class="nav-item">
                     <a class="nav-link text-white" href="/signup">Sign Up</a>
