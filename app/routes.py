@@ -22,7 +22,6 @@ def findpokemon():
             pokemon_dict["Base ATK"] = my_dict["stats"][1]["base_stat"]
             pokemon_dict["Base HP"] = my_dict["stats"][0]["base_stat"]
             pokemon_dict["Base DEF"] = my_dict["stats"][2]["base_stat"]
-            
 
         else:
             flash("The pokemon you're looking for does not exist.", category='warning')
@@ -68,6 +67,9 @@ def catchPokemon():
                     pokemon = Pokemon(id, current_user.id, pokename, img, base_xp, base_hp, base_atk, base_def)
 
                     pokemon.saveToDB()
+
+                    flash(f"{pokename.title()} has been added to your team!", category='success')
+
                 else: 
                     flash(f"You can only hold five pokemon at a time.  To catch {pokename.title()}, please release one pokemon.", category='warning')
 
@@ -91,12 +93,12 @@ def removePokemon(pokemon_id):
 
     if current_user.id == poke.author.id:
         poke.removeFromDB()
-        flash(f"{poke.pokename} has been removed from your team.")
-        return redirect(url_for('myPokemon'))
+        flash(f"{poke.pokename} has been removed from your team.", category='warning')
+        return redirect(url_for('myProfile'))
 
     else:
         flash("You cannot delete someone else's Pokemon.", category='warning')
-        return redirect(url_for('myPokemon'))
+        return redirect(url_for('myProfile'))
 
 @app.route('/my_pokemon', methods=["GET"])
 @login_required
@@ -178,54 +180,115 @@ def battleUser(user_id):
     users=User.query.all()
 
 
+    return render_template('battle.html', my_pokemon = my_pokemon, other_user = other_user, users = users, opponent=opponent)
+
+@app.route('/results/<int:user_id>', methods=["GET", "POST"])
+@login_required
+def resultsPage(user_id):
+
+    other_user = User.query.get(user_id)
+    my_pokemon = current_user.pokemon
+    opponent = other_user.pokemon
+    users=User.query.all()
+
+    my_pokemon_list = []
+    other_pokemon_list = []
+
+    for poke in my_pokemon:
+        my_pokemon_list.append(poke)
+
+    for poke in other_pokemon_list:
+        other_pokemon_list.append(poke)
+
     i = 0
     my_pokemon_wins = 0
     opponent_wins = 0
 
-
+    results = []
     
-    while i < 5:
-        my_attack = my_pokemon[i].base_atk
-        my_defense = my_pokemon[i].base_def
-        my_health = my_pokemon[i].base_hp
-        opponent_attack = opponent[i].base_atk
-        opponent_defense = opponent[i].base_def
-        opponent_health = opponent[i].base_hp
-        while True:
-            attacker = ['my_pokemon', 'opponent']
-            x = random.choice(attacker)
-            print(x)
-            if x == 'my_pokemon':
-                opponent_defense -= my_attack
-                if opponent_defense < 0:
-                    opponent_health += opponent_defense
-                if opponent_health < 0:
-                    my_pokemon_wins += 1
-                    break
-            else:
-                my_defense -= opponent_attack
-                if my_defense < 0:
-                    my_health += my_defense
-                if my_health < 0:
-                    opponent_wins += 1
-                    break
-        print(my_pokemon_wins)
-        print(opponent_wins)
-        
-        i += 1
-        continue
+    if len(my_pokemon) > len(opponent):
+        while i < len(opponent):
+            my_attack = my_pokemon[i].base_atk
+            my_defense = my_pokemon[i].base_def
+            my_health = my_pokemon[i].base_hp
+            opponent_attack = opponent[i].base_atk
+            opponent_defense = opponent[i].base_def
+            opponent_health = opponent[i].base_hp
+            while True:
+                attacker = ['my_pokemon', 'opponent']
+                x = random.choice(attacker)
+                print(x)
+                if x == 'my_pokemon':
+                    opponent_defense -= my_attack
+                    if opponent_defense < 0:
+                        opponent_health += opponent_defense
+                    if opponent_health < 0:
+                        my_pokemon_wins += 1
+                        results.append(current_user)
+                        break
+                else:
+                    my_defense -= opponent_attack
+                    if my_defense < 0:
+                        my_health += my_defense
+                    if my_health < 0:
+                        opponent_wins += 1
+                        results.append(other_user)
+                        break
+            print(my_pokemon_wins)
+            print(opponent_wins)
+            print(results)
+            
+            i += 1
+            continue
+    else:
+        while i < len(my_pokemon):
+            my_attack = my_pokemon[i].base_atk
+            my_defense = my_pokemon[i].base_def
+            my_health = my_pokemon[i].base_hp
+            opponent_attack = opponent[i].base_atk
+            opponent_defense = opponent[i].base_def
+            opponent_health = opponent[i].base_hp
+            while True:
+                attacker = ['my_pokemon', 'opponent']
+                x = random.choice(attacker)
+                print(x)
+                if x == 'my_pokemon':
+                    opponent_defense -= my_attack
+                    if opponent_defense < 0:
+                        opponent_health += opponent_defense
+                    if opponent_health < 0:
+                        my_pokemon_wins += 1
+                        results.append(current_user)
+                        break
+                else:
+                    my_defense -= opponent_attack
+                    if my_defense < 0:
+                        my_health += my_defense
+                    if my_health < 0:
+                        opponent_wins += 1
+                        results.append(other_user)
+                        break
+            print(my_pokemon_wins)
+            print(opponent_wins)
+            print(results)
+            
+            i += 1
+            continue
+    
+
+    results_len = len(results)
 
     if my_pokemon_wins > opponent_wins:
         current_user.wins += 1
-        flash(f'{current_user.username} wins!', category='success')
     else:
         other_user.wins += 1
-        flash(f'{other_user.username} wins...', category='warning')
     
 
     databaseCommit()
 
-    return render_template('battle.html', my_pokemon = my_pokemon, other_user = other_user, users = users, opponent=opponent)
+    return render_template('results.html', my_pokemon = my_pokemon, other_user = other_user, users = users, opponent=opponent, results = results, results_len = results_len, my_pokemon_wins=my_pokemon_wins, opponent_wins=opponent_wins)
+
+
 
 @app.route('/my_profile', methods=["GET", "POST"])
 @login_required
@@ -237,3 +300,5 @@ def myProfile():
     users=User.query.all()
 
     return render_template('my_profile.html', pokemon = pokemon, my_pokemon = my_pokemon, users=users)
+
+

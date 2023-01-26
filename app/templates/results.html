@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{%block content%}
+
+{% if results_len == 5 %}
+<div class="row text-center my-1 text-white">
+    <div>Round 1 Winner: <span>&nbsp&nbsp{{ results[0].username }}</span> <img src="{{results[0].pokemon[0].img}}"></div>
+    <div>Round 2 Winner:  <span>&nbsp&nbsp{{ results[1].username }}</span><img src="{{results[1].pokemon[1].img}}"></div>
+    <div>Round 3 Winner:  <span>&nbsp&nbsp{{ results[2].username }}</span><img src="{{results[2].pokemon[2].img}}"></div>
+    <div>Round 4 Winner:  <span>&nbsp&nbsp{{ results[3].username }}</span><img src="{{results[3].pokemon[3].img}}"></div>
+    <div>Round 5 Winner:  <span>&nbsp&nbsp{{ results[4].username }}</span><img src="{{results[4].pokemon[4].img}}"></div>
+</div>
+{% elif results_len == 4 %}
+<div class="row text-center my-1 text-white">
+    <div>Round 1 Winner: <span>&nbsp&nbsp{{ results[0].username }}</span> <img src="{{results[0].pokemon[0].img}}"></div>
+    <div>Round 2 Winner:  <span>&nbsp&nbsp{{ results[1].username }}</span><img src="{{results[1].pokemon[1].img}}"></div>
+    <div>Round 3 Winner:  <span>&nbsp&nbsp{{ results[2].username }}</span><img src="{{results[2].pokemon[2].img}}"></div>
+    <div>Round 4 Winner:  <span>&nbsp&nbsp{{ results[3].username }}</span><img src="{{results[3].pokemon[3].img}}"></div>
+</div>
+{% elif results_len == 3 %}
+<div class="row text-center my-1 text-white">
+    <div>Round 1 Winner: <span>&nbsp&nbsp{{ results[0].username }}</span> <img src="{{results[0].pokemon[0].img}}"></div>
+    <div>Round 2 Winner:  <span>&nbsp&nbsp{{ results[1].username }}</span><img src="{{results[1].pokemon[1].img}}"></div>
+    <div>Round 3 Winner:  <span>&nbsp&nbsp{{ results[2].username }}</span><img src="{{results[2].pokemon[2].img}}"></div>
+</div>
+{% elif results_len == 2 %}
+<div class="row text-center my-1 text-white">
+    <div>Round 1 Winner: <span>&nbsp&nbsp{{ results[0].username }}</span> <img src="{{results[0].pokemon[0].img}}"></div>
+    <div>Round 2 Winner:  <span>&nbsp&nbsp{{ results[1].username }}</span><img src="{{results[1].pokemon[1].img}}"></div>
+</div>
+{% else %}
+<div class="row text-center my-1 text-white">
+    <div>Round 1 Winner: <span>&nbsp&nbsp{{ results[0].username }}</span> <img src="{{results[0].pokemon[0].img}}"></div>
+</div>
+
+{% endif %}
+
+{%if my_pokemon_wins > opponent_wins%}
+<div class="row text-center my-5 text-white">
+    <h1>{{current_user.username}} wins!</h1>
+</div>
+{%else%}
+<div class="row text-center my-5 text-white">
+    <h1>{{other_user.username}} wins!</h1>
+</div>
+
+{%endif%}
+
+<a class="btn btn-warning my-5 d-flex justify-content-center" href="{{url_for('resultsPage', user_id = other_user.id)}}">REMATCH</a>
+
+
+        {%endblock%}

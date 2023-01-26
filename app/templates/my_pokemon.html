@@ -3,7 +3,7 @@
 {% block content %}
 
 
-<div class="row text-center my-5 text-props">
+<div class="row text-center my-5 text-white">
     <h1>{{current_user.username}}'s Pokemon</h1>
 </div>
 
@@ -15,7 +15,7 @@
     </div>
     <br>
     {%endfor%}
-<div class="row my-5 d-flex justify-content-center text-center text-props">
+<div class="row my-5 d-flex justify-content-center text-center text-white">
     <h3>Choose Your Opponent</h3>
     {% for user in users %}
     {% if user.id != current_user.id %}
