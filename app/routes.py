@@ -3,6 +3,7 @@ from flask import render_template, request, redirect, url_for, flash
 from .forms import UserCreationForm, PokemonSearchForm, LoginForm, CatchPokemon
 from .models import User, Pokemon, Catch, databaseCommit
 from flask_login import login_user, logout_user, current_user, login_required
+from werkzeug.security import check_password_hash
 import requests as r
 import random
 
@@ -117,10 +118,11 @@ def signUpPage():
     if request.method == "POST":
         if form.validate():
             username = form.username.data
+            name = form.name.data
             email = form.email.data
             password = form.password.data
 
-            user = User(username, email, password)
+            user = User(username, name, email, password)
 
             user.saveToDB()
 
@@ -140,7 +142,7 @@ def loginPage():
 
             user = User.query.filter_by(username=username).first()
             if user: 
-                if user.password == password:
+                if check_password_hash(user.password, password):
                     login_user(user)
                 else:
                     flash('WRONG PASSWORD', category='warning')

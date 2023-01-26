@@ -1,6 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from flask_login import UserMixin
+from werkzeug.security import generate_password_hash
 
 
 db = SQLAlchemy()
@@ -9,6 +10,7 @@ db = SQLAlchemy()
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(45), nullable=False, unique=True)
+    name = db.Column(db.String(45))
     email = db.Column(db.String(150), nullable=False, unique=True)
     password = db.Column(db.String, nullable=False)
     wins = db.Column(db.Integer)
@@ -16,10 +18,11 @@ class User(db.Model, UserMixin):
     catch = db.relationship('Catch', backref='author', lazy=True)
 
 
-    def __init__(self, username, email, password, wins=0):
+    def __init__(self, username, name, email, password, wins=0):
         self.username = username
+        self.name = name
         self.email = email
-        self.password = password
+        self.password = generate_password_hash(password)
         self.wins = wins
 
     def saveToDB(self):
